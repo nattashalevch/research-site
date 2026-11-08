@@ -3,6 +3,7 @@ site_url: https://nattashalevch.github.io/research-site/
 theme:
   name: material
   language: ru
+  font: false
   palette:
     scheme: slate
     primary: teal
@@ -22,3 +23,4 @@ extra:
   version:
     provider: mike
     default: latest
+copyright: Контент — CC BY 4.0, код — MIT. Левченкова Н., Кильдеева Д.

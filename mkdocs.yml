@@ -1,0 +1,13 @@
+site_name: Результаты исследований
+site_url: https://nattashalevch.github.io/research-site/
+theme:
+  name: material
+  language: ru
+  palette:
+    scheme: slate
+    primary: teal
+    accent: amber
+  features:
+    - navigation.tabs
+    - navigation.top
+    - search.highlight

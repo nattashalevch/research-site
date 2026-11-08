@@ -11,3 +11,10 @@ theme:
     - navigation.tabs
     - navigation.top
     - search.highlight
+plugins:
+  - search:
+      lang: ru
+extra:
+  version:
+    provider: mike
+    default: latest

@@ -28,6 +28,10 @@ jobs:
       - uses: actions/upload-pages-artifact@v3
         with:
           path: site
+      - uses: actions/upload-artifact@v4
+        with:
+          name: site-files
+          path: site
 
   deploy:
     needs: build
@@ -38,3 +42,37 @@ jobs:
     steps:
       - id: deployment
         uses: actions/deploy-pages@v4
+
+  helios:
+    needs: build
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    env:
+      HELIOS_USER: ${{ secrets.HELIOS_USER }}
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: site-files
+          path: site
+
+      - name: Prepare SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.HELIOS_SSH_KEY }}" > ~/.ssh/helios_key
+          chmod 600 ~/.ssh/helios_key
+          echo "${{ secrets.HELIOS_KNOWN_HOSTS }}" > ~/.ssh/known_hosts
+
+      - name: Rsync to Helios
+        run: |
+          rsync -az --delete \
+            -e "ssh -i ~/.ssh/helios_key -p 2222 -o StrictHostKeyChecking=yes" \
+            site/ "$HELIOS_USER@helios.cs.ifmo.ru:public_html/research-site/"
+
+      - name: Healthcheck
+        run: |
+          URL="https://se.ifmo.ru/~$HELIOS_USER/research-site/"
+          CODE=$(curl -s -o page.html -w "%{http_code}" "$URL")
+          echo "HTTP code: $CODE"
+          test "$CODE" = "200"
+          grep -q "Публикация результатов исследований" page.html
+          echo "Healthcheck OK"
